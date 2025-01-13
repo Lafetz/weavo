@@ -1,6 +1,7 @@
 package weather
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -9,7 +10,7 @@ import (
 
 type MockWeatherProvider struct{}
 
-func (m *MockWeatherProvider) GetWeather(city string) (domain.Weather, error) {
+func (m *MockWeatherProvider) GetWeather(ctx context.Context, city string) (domain.Weather, error) {
 	if city == "London" {
 		return domain.Weather{
 			Temperature: 15.5,
@@ -43,7 +44,7 @@ func TestGetWeather_CacheHit(t *testing.T) {
 	provider := &MockWeatherProvider{}
 	service := NewService(provider, cache)
 
-	weather, err := service.GetWeather("London")
+	weather, err := service.GetWeather(context.TODO(), "London")
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -56,7 +57,7 @@ func TestGetWeather_CacheMissAndAPICall(t *testing.T) {
 	cache := &MockCache{data: make(map[string]domain.Weather)}
 	provider := &MockWeatherProvider{}
 	service := NewService(provider, cache)
-	weather, err := service.GetWeather("London")
+	weather, err := service.GetWeather(context.TODO(), "London")
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -73,7 +74,7 @@ func TestGetWeather_CacheMissAndAPICallFailure(t *testing.T) {
 	cache := &MockCache{data: make(map[string]domain.Weather)} // Empty cache
 	provider := &MockWeatherProvider{}
 	service := NewService(provider, cache)
-	weather, err := service.GetWeather("Paris")
+	weather, err := service.GetWeather(context.TODO(), "Paris")
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}

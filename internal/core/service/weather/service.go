@@ -1,6 +1,7 @@
 package weather
 
 import (
+	"context"
 	"errors"
 
 	"github.com/lafetz/weavo/internal/core/domain"
@@ -20,7 +21,7 @@ func NewService(weatherProvider WeatherProvider, cache CachePort) *Service {
 	return &Service{weatherProvider: weatherProvider, cache: cache}
 }
 
-func (s *Service) GetWeather(City string) (domain.Weather, error) {
+func (s *Service) GetWeather(ctx context.Context, City string) (domain.Weather, error) {
 	weather, err := s.cache.GetWeather(City)
 	if err == nil {
 		return weather, nil
@@ -28,7 +29,7 @@ func (s *Service) GetWeather(City string) (domain.Weather, error) {
 	if !errors.Is(err, ErrWeatherNotFound) { // if the error is not a cache miss, return the error
 		return domain.Weather{}, err
 	}
-	weather, err = s.weatherProvider.GetWeather(City)
+	weather, err = s.weatherProvider.GetWeather(ctx, City)
 	if err != nil {
 		return domain.Weather{}, err
 	}

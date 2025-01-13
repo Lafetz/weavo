@@ -1,11 +1,15 @@
 package weather
 
-import "github.com/lafetz/weavo/internal/core/domain"
+import (
+	"context"
+
+	"github.com/lafetz/weavo/internal/core/domain"
+)
 
 type WeatherProvider interface {
-	GetWeather(City string) (domain.Weather, error)
+	GetWeather(ctx context.Context, city string) (domain.Weather, error)
 }
 type CachePort interface {
-	GetWeather(City string) (domain.Weather, error)
-	SetWeather(City string, weather domain.Weather) error
+	GetWeather(city string) (domain.Weather, error)
+	SetWeather(city string, weather domain.Weather) error
 }

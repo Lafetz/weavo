@@ -155,7 +155,6 @@ func TestDeleteLocation(t *testing.T) {
 		},
 	}
 	repo.CreateLocation(context.Background(), loc)
-
 	err := repo.DeleteLocation(context.Background(), "1")
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
