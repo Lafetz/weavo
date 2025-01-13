@@ -8,4 +8,6 @@ type Weather struct {
 	DateTime    string
 	Location    string
 	Units       string
+	Lat         float64
+	Lon         float64
 }

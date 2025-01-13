@@ -28,6 +28,12 @@ type WeatherAPIResponse struct {
 	Timezone int    `json:"timezone"`
 	Name     string `json:"name"`
 	Units    string `json:"units"`
+	Coord    Coord  `json:"coord"`
+}
+
+type Coord struct {
+	Lon float64 `json:"lon"`
+	Lat float64 `json:"lat"`
 }
 type OpenWeather struct {
 	Url string
@@ -68,9 +74,10 @@ func (o OpenWeather) GetWeather(city string) (domain.Weather, error) {
 		Condition:   apiResp.Weather[0].Main,
 		Icon:        apiResp.Weather[0].Icon,
 		DateTime:    dateTime,
-
-		Location: apiResp.Name,
-		Units:    "metric",
+		Location:    apiResp.Name,
+		Units:       "metric",
+		Lat:         apiResp.Coord.Lat,
+		Lon:         apiResp.Coord.Lon,
 	}
 
 	return weather, nil
