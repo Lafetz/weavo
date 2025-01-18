@@ -1,0 +1,247 @@
+definitions:
+  dto.Coordinates:
+    properties:
+      lat:
+        type: number
+      lon:
+        type: number
+    required:
+    - lat
+    - lon
+    type: object
+  dto.LocationReq:
+    properties:
+      city:
+        minLength: 1
+        type: string
+      coordinates:
+        $ref: '#/definitions/dto.Coordinates'
+      nickname:
+        minLength: 1
+        type: string
+      notes:
+        minLength: 1
+        type: string
+      userID:
+        type: string
+    required:
+    - city
+    - coordinates
+    - nickname
+    - notes
+    type: object
+  dto.LocationRes:
+    properties:
+      city:
+        type: string
+      coordinates:
+        $ref: '#/definitions/dto.Coordinates'
+      created_at:
+        type: string
+      id:
+        type: string
+      nickname:
+        type: string
+      notes:
+        type: string
+    type: object
+  dto.WeatherRes:
+    properties:
+      condition:
+        type: string
+      date_time:
+        type: string
+      description:
+        type: string
+      icon:
+        type: string
+      lat:
+        type: number
+      location:
+        type: string
+      lon:
+        type: number
+      temperature:
+        type: number
+      units:
+        type: string
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+info:
+  contact:
+    name: API Support
+    url: http://github.com/lafetz/weavo
+  description: This is the Weavo server.
+  termsOfService: http://github.com/lafetz/weavo
+  title: Weavo API
+  version: "1.0"
+paths:
+  /api/v1/locations:
+    post:
+      consumes:
+      - application/json
+      description: Create a new location with the provided details
+      parameters:
+      - description: Location request body
+        in: body
+        name: location
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LocationReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Location created successfully
+          schema:
+            $ref: '#/definitions/dto.LocationRes'
+        "400":
+          description: Invalid input format
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Create a new location
+      tags:
+      - locations
+  /api/v1/locations/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a location by its ID
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: location deleted successfully
+          schema:
+            type: string
+        "400":
+          description: invalid id
+          schema:
+            type: string
+        "404":
+          description: location not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Delete a location
+      tags:
+      - locations
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a location from the service using the provided ID.
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: location retrieved successfully
+          schema:
+            $ref: '#/definitions/dto.LocationRes'
+        "400":
+          description: invalid id
+          schema:
+            type: string
+        "404":
+          description: location not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Retrieve a location by ID
+      tags:
+      - locations
+    put:
+      consumes:
+      - application/json
+      description: Update an existing location with the provided details
+      parameters:
+      - description: Location ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Location request body
+        in: body
+        name: LocationReq
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LocationReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: location updated successfully
+          schema:
+            $ref: '#/definitions/dto.LocationRes'
+        "400":
+          description: Invalid input format or invalid id
+          schema:
+            type: string
+        "404":
+          description: location not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Update a location
+      tags:
+      - locations
+  /api/v1/weather:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves weather information for a specified city.
+      parameters:
+      - description: City name
+        in: query
+        name: city
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: weather retrieved successfully
+          schema:
+            $ref: '#/definitions/dto.WeatherRes'
+        "400":
+          description: invalid city
+          schema:
+            type: string
+        "404":
+          description: city not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get weather information
+      tags:
+      - weather
+swagger: "2.0"

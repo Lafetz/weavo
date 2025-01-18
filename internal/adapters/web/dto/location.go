@@ -33,7 +33,6 @@ func (l *LocationReq) ToDomain() domain.Location {
 // get location
 type LocationRes struct {
 	Id          string      `json:"id"`
-	UserID      string      `json:"userId"`
 	Notes       string      `json:"notes"`
 	Nickname    string      `json:"nickname"`
 	City        string      `json:"city"`
@@ -44,7 +43,6 @@ type LocationRes struct {
 func GetLocationRes(l domain.Location) LocationRes {
 	return LocationRes{
 		Id:       l.Id,
-		UserID:   l.UserID,
 		Notes:    l.Notes,
 		Nickname: l.Nickname,
 		City:     l.City,

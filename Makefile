@@ -15,3 +15,5 @@ build:
 .PHONY: air
 air:
 	air -c .air.toml
+swagger:
+	swag init -g cmd/main.go

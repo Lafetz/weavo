@@ -10,6 +10,19 @@ import (
 	"github.com/lafetz/weavo/internal/core/service/weather"
 )
 
+// GetWeather handles the HTTP request to retrieve weather information for a given city.
+//
+// @Summary Get weather information
+// @Description Retrieves weather information for a specified city.
+// @Tags weather
+// @Accept json
+// @Produce json
+// @Param city query string true "City name"
+// @Success 200 {object} dto.WeatherRes "weather retrieved successfully"
+// @Failure 400 {string} string "invalid city"
+// @Failure 404 {string} string "city not found"
+// @Failure 500 {string} string "internal server error"
+// @Router /api/v1/weather [get]
 func GetWeather(weatherSvc weather.ServiceApi, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		city := r.URL.Query().Get("city")

@@ -1,7 +1,6 @@
 package webutils
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -33,7 +32,7 @@ func (v *CustomValidator) ValidateAndRespond(w http.ResponseWriter, input interf
 			return true
 		}
 	}
-	fmt.Println("wa", err)
+
 	return false
 }
 

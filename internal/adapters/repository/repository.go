@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/lafetz/weavo/internal/core/domain"
 	"github.com/lafetz/weavo/internal/core/service/location"
 )
@@ -27,6 +28,8 @@ func NewInMemoryLocationRepo(dataRetention time.Duration) *InMemoryLocationRepo 
 func (repo *InMemoryLocationRepo) CreateLocation(ctx context.Context, loc domain.Location) (domain.Location, error) {
 	repo.mu.Lock()
 	defer repo.mu.Unlock()
+	loc.Id = uuid.New().String()
+	loc.CreatedAt = time.Now()
 	repo.locations[loc.Id] = loc
 	return loc, nil
 }
@@ -70,10 +73,11 @@ func (repo *InMemoryLocationRepo) GetLocations(ctx context.Context, userID strin
 func (repo *InMemoryLocationRepo) UpdateLocation(ctx context.Context, loc domain.Location) (domain.Location, error) {
 	repo.mu.Lock()
 	defer repo.mu.Unlock()
-	_, exists := repo.locations[loc.Id]
+	el, exists := repo.locations[loc.Id]
 	if !exists {
 		return domain.Location{}, location.ErrLocationNotFound
 	}
+	loc.CreatedAt = el.CreatedAt
 	repo.locations[loc.Id] = loc
 	return loc, nil
 }

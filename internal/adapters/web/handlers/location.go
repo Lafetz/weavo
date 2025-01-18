@@ -10,6 +10,20 @@ import (
 	"github.com/lafetz/weavo/internal/core/service/location"
 )
 
+const hello = ""
+
+// CreateLocation handles the creation of a new location.
+//
+// @Summary Create a new location
+// @Description Create a new location with the provided details
+// @Tags locations
+// @Accept json
+// @Produce json
+// @Param location body dto.LocationReq true "Location request body"
+// @Success 201 {object} dto.LocationRes "Location created successfully"
+// @Failure 400 {string} string "Invalid input format"
+// @Failure 500 {string} string "Internal server error"
+// @Router /api/v1/locations [post]
 func CreateLocation(locationSvc location.ServiceApi, logger *slog.Logger, validator *webutils.CustomValidator) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req dto.LocationReq
@@ -36,6 +50,19 @@ func CreateLocation(locationSvc location.ServiceApi, logger *slog.Logger, valida
 	}
 }
 
+// GetLocation handles the HTTP request to retrieve a location by its ID.
+//
+// @Summary Retrieve a location by ID
+// @Description Retrieves a location from the service using the provided ID.
+// @Tags locations
+// @Accept json
+// @Produce json
+// @Param id path string true "Location ID"
+// @Success 200 {object} dto.LocationRes "location retrieved successfully"
+// @Failure 400 {string} string "invalid id"
+// @Failure 404 {string} string "location not found"
+// @Failure 500 {string} string "internal server error"
+// @Router /api/v1/locations/{id} [get]
 func GetLocation(locationSvc location.ServiceApi, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
@@ -60,6 +87,19 @@ func GetLocation(locationSvc location.ServiceApi, logger *slog.Logger) http.Hand
 	}
 }
 
+// UpdateLocation handles the HTTP request for updating a location.
+// @Summary Update a location
+// @Description Update an existing location with the provided details
+// @Tags locations
+// @Accept json
+// @Produce json
+// @Param id path string true "Location ID"
+// @Param LocationReq body dto.LocationReq true "Location request body"
+// @Success 200 {object} dto.LocationRes "location updated successfully"
+// @Failure 400 {string} string "Invalid input format or invalid id"
+// @Failure 404 {string} string "location not found"
+// @Failure 500 {string} string "internal server error"
+// @Router /api/v1/locations/{id} [put]
 func UpdateLocation(locationSvc location.ServiceApi, logger *slog.Logger, validator *webutils.CustomValidator) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req dto.LocationReq
@@ -94,6 +134,19 @@ func UpdateLocation(locationSvc location.ServiceApi, logger *slog.Logger, valida
 	}
 }
 
+// DeleteLocation handles the HTTP request for deleting a location.
+//
+// @Summary Delete a location
+// @Description Deletes a location by its ID
+// @Tags locations
+// @Accept json
+// @Produce json
+// @Param id path string true "Location ID"
+// @Success 200 {string} string "location deleted successfully"
+// @Failure 400 {string} string "invalid id"
+// @Failure 404 {string} string "location not found"
+// @Failure 500 {string} string "internal server error"
+// @Router /api/v1/locations/{id} [delete]
 func DeleteLocation(locationSvc location.ServiceApi, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
@@ -117,6 +170,19 @@ func DeleteLocation(locationSvc location.ServiceApi, logger *slog.Logger) http.H
 		webutils.WriteJSON(w, http.StatusOK, "location deleted successfully", nil, nil)
 	}
 }
+
+// GetAllLocations handles the HTTP request to retrieve all locations for a user.
+//
+// @Summary Retrieve all locations
+// @Description Retrieves a list of locations for the authenticated user with pagination support.
+// @Tags locations
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number" default(1)
+// @Param pageSize query int false "Number of items per page" default(5)
+// @Success 200 {object} dto.LocationsRes "locations retrieved successfully"
+// @Failure 500 {object} webutils.ErrorResponse "internal server error"
+// @Router /api/v1/locations [get]
 
 func GetAllLocations(locationSvc location.ServiceApi, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

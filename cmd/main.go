@@ -17,6 +17,16 @@ import (
 	customlogger "github.com/lafetz/weavo/internal/logger"
 )
 
+// @title           Weavo API
+// @version         1.0
+// @description     This is the Weavo server.
+// @termsOfService  http://github.com/lafetz/weavo
+
+// @contact.name   API Support
+// @contact.url    http://github.com/lafetz/weavo
+
+// @externalDocs.description  OpenAPI
+// @externalDocs.url          https://swagger.io/resources/open-api/
 const dataRetention = 24 * time.Hour
 
 func main() {
