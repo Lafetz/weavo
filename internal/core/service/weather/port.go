@@ -6,6 +6,9 @@ import (
 	"github.com/lafetz/weavo/internal/core/domain"
 )
 
+type ServiceApi interface {
+	GetWeather(ctx context.Context, City string) (domain.Weather, error)
+}
 type WeatherProvider interface {
 	GetWeather(ctx context.Context, city string) (domain.Weather, error)
 }

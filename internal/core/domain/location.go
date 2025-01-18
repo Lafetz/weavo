@@ -1,5 +1,7 @@
 package domain
 
+import "time"
+
 type Location struct {
 	Id          string
 	UserID      string
@@ -7,7 +9,7 @@ type Location struct {
 	Nickname    string
 	City        string
 	Coordinates Coordinates
-	CreatedAt   string
+	CreatedAt   time.Time
 }
 type Coordinates struct {
 	Lat float64

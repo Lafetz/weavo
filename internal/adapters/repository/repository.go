@@ -3,20 +3,25 @@ package repository
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/lafetz/weavo/internal/core/domain"
 	"github.com/lafetz/weavo/internal/core/service/location"
 )
 
 type InMemoryLocationRepo struct {
-	mu        sync.RWMutex
-	locations map[string]domain.Location
+	mu            sync.RWMutex
+	locations     map[string]domain.Location
+	dataRetention time.Duration
 }
 
-func NewInMemoryLocationRepo() *InMemoryLocationRepo {
-	return &InMemoryLocationRepo{
-		locations: make(map[string]domain.Location),
+func NewInMemoryLocationRepo(dataRetention time.Duration) *InMemoryLocationRepo {
+	repo := &InMemoryLocationRepo{
+		locations:     make(map[string]domain.Location),
+		dataRetention: dataRetention,
 	}
+	go repo.cleanupExpiredLocations()
+	return repo
 }
 
 func (repo *InMemoryLocationRepo) CreateLocation(ctx context.Context, loc domain.Location) (domain.Location, error) {
@@ -39,7 +44,7 @@ func (repo *InMemoryLocationRepo) GetLocation(ctx context.Context, id string) (d
 func (repo *InMemoryLocationRepo) GetLocations(ctx context.Context, userID string, filter location.Filter) ([]domain.Location, domain.Metadata, error) {
 	repo.mu.RLock()
 	defer repo.mu.RUnlock()
-	var locations []domain.Location
+	locations := []domain.Location{}
 	for _, loc := range repo.locations {
 		if loc.UserID == userID {
 			locations = append(locations, loc)
@@ -57,7 +62,7 @@ func (repo *InMemoryLocationRepo) GetLocations(ctx context.Context, userID strin
 	}
 
 	paginatedLocations := locations[start:end]
-	metadata := domain.CalculateMetadata(int32(totalRecords), int32(start), int32(filter.PageSize))
+	metadata := domain.CalculateMetadata(int32(totalRecords), int32(filter.Page), int32(filter.PageSize))
 
 	return paginatedLocations, metadata, nil
 }
@@ -82,4 +87,18 @@ func (repo *InMemoryLocationRepo) DeleteLocation(ctx context.Context, id string)
 	}
 	delete(repo.locations, id)
 	return nil
+}
+
+func (repo *InMemoryLocationRepo) cleanupExpiredLocations() {
+	ticker := time.NewTicker(repo.dataRetention)
+	for {
+		<-ticker.C
+		repo.mu.Lock()
+		for id, loc := range repo.locations {
+			if time.Since(loc.CreatedAt) > repo.dataRetention {
+				delete(repo.locations, id)
+			}
+		}
+		repo.mu.Unlock()
+	}
 }

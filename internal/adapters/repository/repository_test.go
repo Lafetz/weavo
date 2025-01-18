@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/lafetz/weavo/internal/core/domain"
 	"github.com/lafetz/weavo/internal/core/service/location"
 )
 
 func TestCreateLocation(t *testing.T) {
-	repo := NewInMemoryLocationRepo()
+	repo := NewInMemoryLocationRepo(24 * time.Hour)
 	location := domain.Location{
 		Id:       "1",
 		UserID:   "user1",
@@ -34,7 +35,7 @@ func TestCreateLocation(t *testing.T) {
 }
 
 func TestGetLocation(t *testing.T) {
-	repo := NewInMemoryLocationRepo()
+	repo := NewInMemoryLocationRepo(24 * time.Hour)
 	location := domain.Location{
 		Id:       "1",
 		UserID:   "user1",
@@ -59,7 +60,7 @@ func TestGetLocation(t *testing.T) {
 }
 
 func TestGetLocations(t *testing.T) {
-	repo := NewInMemoryLocationRepo()
+	repo := NewInMemoryLocationRepo(24 * time.Hour)
 	location1 := domain.Location{
 		Id:       "1",
 		UserID:   "user1",
@@ -101,7 +102,7 @@ func TestGetLocations(t *testing.T) {
 }
 
 func TestUpdateLocation(t *testing.T) {
-	repo := NewInMemoryLocationRepo()
+	repo := NewInMemoryLocationRepo(24 * time.Hour)
 	location := domain.Location{
 		Id:       "1",
 		UserID:   "user1",
@@ -142,7 +143,7 @@ func TestUpdateLocation(t *testing.T) {
 }
 
 func TestDeleteLocation(t *testing.T) {
-	repo := NewInMemoryLocationRepo()
+	repo := NewInMemoryLocationRepo(24 * time.Hour)
 	loc := domain.Location{
 		Id:       "1",
 		UserID:   "user1",
@@ -161,6 +162,30 @@ func TestDeleteLocation(t *testing.T) {
 	}
 
 	_, err = repo.GetLocation(context.Background(), "1")
+	if !errors.Is(err, location.ErrLocationNotFound) {
+		t.Fatalf("expected error %v, got %v", location.ErrLocationNotFound, err)
+	}
+}
+func TestCleanupExpiredLocations(t *testing.T) {
+	repo := NewInMemoryLocationRepo(1 * time.Second)
+	loc := domain.Location{
+		Id:        "1",
+		UserID:    "user1",
+		Notes:     "Test notes",
+		Nickname:  "Home",
+		City:      "City1",
+		CreatedAt: time.Now().Add(-25 * time.Hour), // Set CreatedAt to more than 24 hours ago
+		Coordinates: domain.Coordinates{
+			Lat: 1.0,
+			Lon: 1.0,
+		},
+	}
+	repo.CreateLocation(context.Background(), loc)
+
+	dataRetention := 1 * time.Second
+	time.Sleep(dataRetention + 1*time.Microsecond)
+
+	_, err := repo.GetLocation(context.Background(), "1")
 	if !errors.Is(err, location.ErrLocationNotFound) {
 		t.Fatalf("expected error %v, got %v", location.ErrLocationNotFound, err)
 	}
