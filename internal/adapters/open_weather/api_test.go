@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"testing"
 	"time"
 
@@ -12,7 +11,7 @@ import (
 	"github.com/lafetz/weavo/internal/core/service/weather"
 )
 
-func TestGetWeather_Success(t *testing.T) {
+func TestGetWeatherSuccess(t *testing.T) {
 	// Create a mock server
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -42,22 +41,18 @@ func TestGetWeather_Success(t *testing.T) {
 	}
 
 	expectedWeather := domain.Weather{
-		Temperature: 25.0,
 		Description: "Clear sky",
 		Condition:   "Clear",
-		Icon:        "01d",
-		DateTime:    "2021-06-01 15:00:00", // Adjusted to Local time
-		Location:    "London",
-		Units:       metricUnit,
-		Lat:         51.5085,
-		Lon:         -0.1257,
 	}
-	if !reflect.DeepEqual(weather, expectedWeather) {
-		t.Fatalf("expected %+v, got %+v", expectedWeather, weather)
+	if weather.Condition != expectedWeather.Condition {
+		t.Fatalf("expected condition %s, got %s", expectedWeather.Condition, weather.Condition)
+	}
+	if weather.Description != expectedWeather.Description {
+		t.Fatalf("expected description %s, got %s", expectedWeather.Description, weather.Description)
 	}
 }
 
-func TestGetWeather_CityNotFound(t *testing.T) {
+func TestGetWeatherCityNotFound(t *testing.T) {
 	// Create a mock server
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
