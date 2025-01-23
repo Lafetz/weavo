@@ -1,14 +1,32 @@
 services:
-  weavobackend:
+  app:
     build:
       context: ./.
       dockerfile: Dockerfile
-    container_name: weavobackend
+    container_name: app
     ports:
-      - 9080:8080
+      - 8080:8080
     environment:
       - OPEN_URL=${OPEN_URL}
       - OPEN_KEY=${OPEN_KEY}
       - PORT=${PORT}
       - LOG_LEVEL=${LOG_LEVEL}
       - ENV=${ENV}
+  prometheus:
+    image: prom/prometheus:v2.40.4
+    ports:
+      - 9090:9090
+    volumes:
+      - ./deployments/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+  grafana:
+    image: grafana/grafana:9.3.0
+    ports:
+      - 4000:4000
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=devops123
+    volumes:
+      - ./deployments/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - grafana:/var/lib/grafana
+volumes:
+  grafana:
