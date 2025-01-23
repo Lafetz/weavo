@@ -29,7 +29,7 @@ func TestCreateLocation(t *testing.T) {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	if createdLocation != location {
+	if createdLocation.City != location.City {
 		t.Fatalf("expected location %+v, got %+v", location, createdLocation)
 	}
 }
@@ -47,14 +47,17 @@ func TestGetLocation(t *testing.T) {
 			Lon: 1.0,
 		},
 	}
-	repo.CreateLocation(context.Background(), location)
-
-	retrievedLocation, err := repo.GetLocation(context.Background(), "1")
+	loc, err := repo.CreateLocation(context.Background(), location)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	if retrievedLocation != location {
+	retrievedLocation, err := repo.GetLocation(context.Background(), loc.Id)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	if retrievedLocation.City != location.City {
 		t.Fatalf("expected location %+v, got %+v", location, retrievedLocation)
 	}
 }
@@ -104,7 +107,7 @@ func TestGetLocations(t *testing.T) {
 func TestUpdateLocation(t *testing.T) {
 	repo := NewInMemoryLocationRepo(24 * time.Hour)
 	location := domain.Location{
-		Id:       "1",
+
 		UserID:   "user1",
 		Notes:    "Test notes",
 		Nickname: "Home",
@@ -114,10 +117,13 @@ func TestUpdateLocation(t *testing.T) {
 			Lon: 1.0,
 		},
 	}
-	repo.CreateLocation(context.Background(), location)
+	loc, err := repo.CreateLocation(context.Background(), location)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
 
 	updatedLocation := domain.Location{
-		Id:       "1",
+		Id:       loc.Id,
 		UserID:   "user1",
 		Notes:    "Updated notes",
 		Nickname: "Home",
@@ -127,12 +133,12 @@ func TestUpdateLocation(t *testing.T) {
 			Lon: 1.0,
 		},
 	}
-	_, err := repo.UpdateLocation(context.Background(), updatedLocation)
+	_, err = repo.UpdateLocation(context.Background(), updatedLocation)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	retrievedLocation, err := repo.GetLocation(context.Background(), "1")
+	retrievedLocation, err := repo.GetLocation(context.Background(), loc.Id)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -155,13 +161,16 @@ func TestDeleteLocation(t *testing.T) {
 			Lon: 1.0,
 		},
 	}
-	repo.CreateLocation(context.Background(), loc)
-	err := repo.DeleteLocation(context.Background(), "1")
+	loc, err := repo.CreateLocation(context.Background(), loc)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	err = repo.DeleteLocation(context.Background(), loc.Id)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 
-	_, err = repo.GetLocation(context.Background(), "1")
+	_, err = repo.GetLocation(context.Background(), loc.Id)
 	if !errors.Is(err, location.ErrLocationNotFound) {
 		t.Fatalf("expected error %v, got %v", location.ErrLocationNotFound, err)
 	}

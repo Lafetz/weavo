@@ -1,0 +1,7 @@
+coverage.out
+.env
+bin
+tmp
+makefile
+.gitignore
+.air.toml

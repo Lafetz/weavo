@@ -3,8 +3,8 @@ package dto
 import "github.com/lafetz/weavo/internal/core/domain"
 
 type Coordinates struct {
-	Lat float64 `json:"lat" validate:"required"`
-	Lon float64 `json:"lon" validate:"required"`
+	Lat float64 `json:"lat" `
+	Lon float64 `json:"lon"`
 }
 
 // request
@@ -13,7 +13,7 @@ type LocationReq struct {
 	Notes       string      `json:"notes" validate:"required,min=1"`
 	Nickname    string      `json:"nickname" validate:"required,min=1"`
 	City        string      `json:"city" validate:"required,min=1"`
-	Coordinates Coordinates `json:"coordinates" validate:"required"`
+	Coordinates Coordinates `json:"coordinates" `
 }
 
 func (l *LocationReq) ToDomain() domain.Location {

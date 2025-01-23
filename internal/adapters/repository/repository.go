@@ -77,8 +77,10 @@ func (repo *InMemoryLocationRepo) UpdateLocation(ctx context.Context, loc domain
 	if !exists {
 		return domain.Location{}, location.ErrLocationNotFound
 	}
+	el.Nickname = loc.Nickname
+	el.Notes = loc.Notes
 	loc.CreatedAt = el.CreatedAt
-	repo.locations[loc.Id] = loc
+	repo.locations[loc.Id] = el
 	return loc, nil
 }
 

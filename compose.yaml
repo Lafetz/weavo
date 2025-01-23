@@ -1,0 +1,14 @@
+services:
+  weavobackend:
+    build:
+      context: ./.
+      dockerfile: Dockerfile
+    container_name: weavobackend
+    ports:
+      - 9080:8080
+    environment:
+      - OPEN_URL=${OPEN_URL}
+      - OPEN_KEY=${OPEN_KEY}
+      - PORT=${PORT}
+      - LOG_LEVEL=${LOG_LEVEL}
+      - ENV=${ENV}

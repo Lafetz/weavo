@@ -7,7 +7,7 @@ type WeatherRes struct {
 	Temperature float64 `json:"temperature"`
 	Description string  `json:"description"`
 	Condition   string  `json:"condition"`
-	DateTime    string  `json:"date_time"`
+	DateTime    string  `json:"dateTime"`
 	Location    string  `json:"location"`
 	Units       string  `json:"units"`
 	Lat         float64 `json:"lat"`

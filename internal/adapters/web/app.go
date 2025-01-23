@@ -35,6 +35,7 @@ func NewApp(
 	locationSvc *location.Service,
 	weatherSvc weather.ServiceApi,
 ) *App {
+
 	a := &App{
 		Router:      http.NewServeMux(),
 		logger:      logger,
@@ -51,7 +52,7 @@ func (a *App) Run() error {
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%s", strconv.Itoa(a.port)),
-		Handler:      a.Router,
+		Handler:      a.enableCORS(a.Router),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,

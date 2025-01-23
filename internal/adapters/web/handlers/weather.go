@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 
@@ -25,6 +26,7 @@ import (
 // @Router /api/v1/weather [get]
 func GetWeather(weatherSvc weather.ServiceApi, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("what is this")
 		city := r.URL.Query().Get("city")
 		if city == "" {
 			webutils.WriteJSON(w, http.StatusBadRequest, "invalid city", nil, nil)

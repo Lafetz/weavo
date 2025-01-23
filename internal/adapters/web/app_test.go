@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"io"
 	"log/slog"
 	"net/http"
@@ -26,7 +27,8 @@ import (
 )
 
 const dataRetention = 24 * time.Second
-const locationID = "some-valid-id"
+
+var locationID = "some-valid-id"
 
 type opmock struct {
 }
@@ -38,7 +40,7 @@ func setupServer() *App {
 	ow := &opmock{}
 	logger := customlogger.NewLogger(slog.LevelDebug, "development")
 	store := repository.NewInMemoryLocationRepo(dataRetention)
-	seedDatabase(store)
+	locationID = seedDatabase(store)
 	locationSvc := location.NewService(store)
 	mc := mockcache.NewMockCache()
 	weatherSvc := weather.NewService(ow, mc)
@@ -46,13 +48,14 @@ func setupServer() *App {
 	custonmVal := webutils.NewCustomValidator(val)
 	cookieStore := webutils.CookieStore(dataRetention)
 	app := NewApp(8080, logger, cookieStore, custonmVal, locationSvc, weatherSvc)
+
 	return app
 }
 
 func seedDatabase(store *repository.InMemoryLocationRepo) string {
 
-	store.CreateLocation(context.TODO(), domain.Location{
-		Id:          locationID,
+	loc, _ := store.CreateLocation(context.TODO(), domain.Location{
+
 		UserID:      "test-user-id",
 		Notes:       "Test Notes",
 		Nickname:    "Test Nickname",
@@ -60,7 +63,7 @@ func seedDatabase(store *repository.InMemoryLocationRepo) string {
 		Coordinates: domain.Coordinates{Lat: 1.0, Lon: 1.0},
 		CreatedAt:   time.Now(),
 	})
-	return locationID
+	return loc.Id
 }
 
 func TestCreateLocation(t *testing.T) {
